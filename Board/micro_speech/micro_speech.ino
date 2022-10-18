@@ -46,7 +46,7 @@ int32_t previous_time = 0;
 // Create an area of memory to use for input, output, and intermediate arrays.
 // The size of this will depend on the model you're using, and may need to be
 // determined by experimentation.
-constexpr int kTensorArenaSize = 10 * 1024;
+constexpr int kTensorArenaSize = 20 * 1024;
 uint8_t tensor_arena[kTensorArenaSize];
 uint8_t feature_buffer[kFeatureElementCount];
 uint8_t* model_input_buffer = nullptr;
@@ -133,17 +133,27 @@ void setup() {
   // incur some penalty in code space for op implementations that are not
   // needed by this graph.
   //
-  // tflite::ops::micro::AllOpsResolver resolver;
+  // static tflite::ops::micro::AllOpsResolver micro_op_resolver;
   // NOLINTNEXTLINE(runtime-global-variables)
-  static tflite::MicroOpResolver<4> micro_op_resolver;
+  static tflite::MicroOpResolver<15> micro_op_resolver;
   micro_op_resolver.AddBuiltin(
-      tflite::BuiltinOperator_CONV_2D,
-      tflite::ops::micro::Register_CONV_2D());
+      tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+      tflite::ops::micro::Register_DEPTHWISE_CONV_2D(), 1, 4);
+  micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+                               tflite::ops::micro::Register_CONV_2D(), 3, 3);
   micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
-                               tflite::ops::micro::Register_FULLY_CONNECTED());
+                               tflite::ops::micro::Register_FULLY_CONNECTED(), 1, 4);
+  micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_AVERAGE_POOL_2D,
+                               tflite::ops::micro::Register_AVERAGE_POOL_2D(), 2);
+  micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_RESHAPE,
+                               tflite::ops::micro::Register_RESHAPE(), 1);
   micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
-                               tflite::ops::micro::Register_SOFTMAX());
-  micro_op_resolver.AddBuiltin(tflite::BuiltinOperator_RESHAPE, tflite::ops::micro::Register_RESHAPE()); /* I've added this operation */
+                               tflite::ops::micro::Register_SOFTMAX(), 1, 4);
+  // tflite::MicroMutableOpResolver micro_op_resolver;
+  // micro_op_resolver.AddDepthwiseConv2D();
+  // micro_op_resolver.AddFullyConnected();
+  // micro_op_resolver.AddReshape();
+  // micro_op_resolver.AddSoftmax();
 
   // Build an interpreter to run the model with.
   static tflite::MicroInterpreter static_interpreter(
@@ -159,6 +169,11 @@ void setup() {
 
   // Get information about the memory area to use for the model's input.
   model_input = interpreter->input(0);
+  Serial.println(model_input->dims->size);
+  // Serial.println(model_input->dims->data[]);
+  Serial.println(model_input->dims->data[0]);
+  Serial.println(model_input->dims->data[1]);
+  Serial.println(model_input->dims->data[2]);
   if ((model_input->dims->size != 4) || (model_input->dims->data[0] != 1) ||
       (model_input->dims->data[1] != kFeatureSliceCount) ||
       (model_input->dims->data[2] != kFeatureSliceSize) ||
@@ -251,10 +266,15 @@ void loop() {
   // Fetch the spectrogram for the current time.
   const int32_t current_time = LatestAudioTimestamp();
   int how_many_new_slices = 0;
-  Serial.println(feature_provider->GetFeatureSize());
+  // Serial.println(feature_provider->GetFeatureSize());
   TfLiteStatus feature_status = feature_provider->PopulateFeatureData(
       error_reporter, previous_time, current_time, &how_many_new_slices);
   if (feature_status != kTfLiteOk) {
+    Serial.println(model_input->dims->size);
+  // Serial.println(model_input->dims->data[]);
+    Serial.println(model_input->dims->data[0]);
+    Serial.println(model_input->dims->data[1]);
+    Serial.println(model_input->dims->data[2]);
     TF_LITE_REPORT_ERROR(error_reporter, "Feature generation failed");
     return;
   }
