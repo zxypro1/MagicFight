@@ -88,6 +88,7 @@ void setup() {
 
   // set advertised local name and service UUID:
   BLE.setLocalName("Nano 33 BLE Sense");
+  BLE.setDeviceName("Nano 33 BLE Sense");
   BLE.setAdvertisedService(ledService);
 
   // add the characteristic to the service

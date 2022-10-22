@@ -20,10 +20,10 @@ const int sends[NUMBER_OF_LABELS] = {7, 8, 9};
 #define NUMBER_OF_OUTPUTS  NUMBER_OF_LABELS
 Eloquent::TinyML::TensorFlow::TensorFlow<NUMBER_OF_INPUTS, NUMBER_OF_OUTPUTS, TENSOR_ARENA_SIZE> tf_model;
 
-BLEService ledService("180A"); // BLE LED Service
+BLEService ledService("765B"); // BLE LED Service
 
 // BLE LED Switch Characteristic - custom 128-bit UUID, read and writable by central
-BLEByteCharacteristic switchCharacteristic("2A57", BLERead | BLEWrite);
+BLEByteCharacteristic switchCharacteristic("5B23", BLERead | BLEWrite | BLENotify | BLEBroadcast);
 
 
 float features[SAMPLES];
@@ -87,7 +87,8 @@ void setup() {
   }
 
   // set advertised local name and service UUID:
-  BLE.setLocalName("Nano 33 BLE Sense");
+  BLE.setLocalName("Nano 33 BLE Sense2");
+  BLE.setDeviceName("Nano 33 BLE Sense2");
   BLE.setAdvertisedService(ledService);
 
   // add the characteristic to the service
@@ -154,8 +155,9 @@ void loop() {
 
 
       if (recordAudioSample()) {
-      //        Serial.print("You said: ");
-      //        Serial.println(clf.predictLabel(features));
+//        Serial.print("You said: ");
+//        const char* result = clf.predictLabel(features);
+//        Serial.println(result);
         float prediction[NUMBER_OF_LABELS];
         float result = 0;
         tf_model.predict(features, prediction);
@@ -166,7 +168,7 @@ void loop() {
           Serial.println(prediction[i]);
           if (prediction[i] > 0.5){
             switchCharacteristic.writeValue(sends[i]);
-            break;
+            switchCharacteristic.broadcast();
           }
         }
         delay(1000);
