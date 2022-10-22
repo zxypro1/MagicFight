@@ -60,13 +60,13 @@ bool recordAudioSample() {
 
 
 void setup() {
-    Serial.begin(115200);
-    PDM.onReceive(onAudio);
-    mic.begin();
-    delay(3000);
-    tf_model.begin(model_data);
+  Serial.begin(115200);
+  PDM.onReceive(onAudio);
+  mic.begin();
+    // delay(3000);
+  tf_model.begin(model_data);
 
-    while (!Serial);
+  while (!Serial);
 
   // set LED's pin to output mode
   pinMode(LEDR, OUTPUT);
@@ -169,23 +169,23 @@ void loop() {
 
 
 
-    if (recordAudioSample()) {
-//        Serial.print("You said: ");
-//        Serial.println(clf.predictLabel(features));
-        float prediction[NUMBER_OF_LABELS];
-        float result = 0;
-        tf_model.predict(features, prediction);
-        for (int i = 0; i < NUMBER_OF_LABELS; i++) {
-          Serial.print("Label ");
-          Serial.print(words[i]);
-          Serial.print(" = ");
-          Serial.println(prediction[i]);
-          if (prediction[i] > 0.5){
-            switchCharacteristic.writeValue(sends[i]);
-          }
-        }
-        delay(1000);
+  if (recordAudioSample()) {
+  //        Serial.print("You said: ");
+  //        Serial.println(clf.predictLabel(features));
+    float prediction[NUMBER_OF_LABELS];
+    float result = 0;
+    tf_model.predict(features, prediction);
+    for (int i = 0; i < NUMBER_OF_LABELS; i++) {
+      Serial.print("Label ");
+      Serial.print(words[i]);
+      Serial.print(" = ");
+      Serial.println(prediction[i]);
+      if (prediction[i] > 0.5){
+        switchCharacteristic.writeValue(sends[i]);
+      }
     }
+    delay(1000);
+  }
 
-    delay(SAMPLE_DELAY);
+  delay(SAMPLE_DELAY);
 }
