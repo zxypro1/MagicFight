@@ -4,7 +4,7 @@
 #define SAMPLES 64
 #define GAIN (1.0f/50)
 #define SOUND_THRESHOLD 1000
-
+#define SAMPLE_DELAY 20
 
 float features[SAMPLES];
 Mic mic;
@@ -30,7 +30,7 @@ void loop() {
         delay(1000);
     }
 
-    delay(20);
+    delay(SAMPLE_DELAY);
 }
 
 
