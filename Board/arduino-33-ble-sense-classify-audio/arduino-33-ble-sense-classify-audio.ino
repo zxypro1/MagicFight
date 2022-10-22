@@ -66,7 +66,7 @@ void setup() {
     // delay(3000);
   tf_model.begin(model_data);
 
-  while (!Serial);
+//  while (!Serial);
 
   // set LED's pin to output mode
   pinMode(LEDR, OUTPUT);
@@ -183,13 +183,4 @@ void loop() {
     digitalWrite(LEDG, HIGH);        // will turn the LED off
     digitalWrite(LEDB, HIGH);         // will turn the LED off
   }
-
-
-
-
-
-
-
-
-
 }
