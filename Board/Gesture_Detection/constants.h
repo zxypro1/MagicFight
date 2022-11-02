@@ -17,7 +17,7 @@ limitations under the License.
 #define TENSORFLOW_LITE_MICRO_EXAMPLES_MAGIC_WAND_CONSTANTS_H_
 
 // The expected accelerometer data sample frequency
-const float kTargetHz = 25;
+const float kTargetHz = 12;
 
 // What gestures are supported.
 constexpr int kGestureCount = 4;

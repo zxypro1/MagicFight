@@ -90,12 +90,12 @@ bool ReadAccelerometer(tflite::ErrorReporter* error_reporter, float* input,
     //                   ||
     //                   ()
     //
-    const float norm_x = -z;
+    const float norm_x = x;
     const float norm_y = y;
-    const float norm_z = x;
-    save_data[begin_index++] = norm_x * 1000;
-    save_data[begin_index++] = norm_y * 1000;
-    save_data[begin_index++] = norm_z * 1000;
+    const float norm_z = z;
+    save_data[begin_index++] = norm_x;
+    save_data[begin_index++] = norm_y;
+    save_data[begin_index++] = norm_z;
     // Since we took a sample, reset the skip counter
     sample_skip_counter = 1;
     // If we reached the end of the circle buffer, reset
