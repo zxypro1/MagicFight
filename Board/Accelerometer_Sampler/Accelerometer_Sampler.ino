@@ -18,6 +18,7 @@
 #define SAMPLE_NUM 128
 #define SAMPLE_DELAY 10
 #define TOTAL_SAMPLE 10
+#define TOTAL_SAMPLE_DELAY 1500
 
 unsigned int total_counter = 0;
 
@@ -38,7 +39,7 @@ void setup() {
   Serial.println();
   Serial.println("Acceleration in g's");
   Serial.println("X\tY\tZ");
-  delay(1500);
+  delay(TOTAL_SAMPLE_DELAY);
 }
 
 void loop() {
