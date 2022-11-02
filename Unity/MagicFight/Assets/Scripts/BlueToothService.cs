@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ArduinoBluetoothAPI;
 using System;
-using System.Text;
 
 public class BlueToothService : MonoBehaviour
 {
@@ -12,11 +10,18 @@ public class BlueToothService : MonoBehaviour
     private GameObject player;
     private GameObject fireball;
     private GameObject fireball2;
+    private GameObject fireball_other;
+    private GameObject shield;
     public bool isDead = false;
     public string deviceName;
     public string characteristicName;
     public string serviceName;
+    public int waitTime = 1; // shield show time (second)
 
+    /// <summary>
+    /// Set init position of fireballs.
+    /// </summary>
+    /// <returns>Vector3</returns>
     private Vector3 getInitPosition()
     {
         if (name == "Wizard")
@@ -29,14 +34,29 @@ public class BlueToothService : MonoBehaviour
         }
     }
 
+    private void block()
+    {
+        if (fireball_other.activeSelf)
+        {
+            fireball_other.GetComponent<fireballs>().isblocked = true;
+        }
+    }
+
+    /// <summary>
+    /// Spell Expelliamas
+    /// </summary>
     private void exps() {
         anim.SetTrigger("attack");
+        fireball.GetComponent<fireballs>().onInit();
         fireball.SetActive(true);
         fireball.transform.position = transform.position;
         fireball.transform.position += getInitPosition();
         Debug.Log("EXPS!");
     }
 
+    /// <summary>
+    /// Spell Avada Kedavra
+    /// </summary>
     private void avad() {
         anim.SetTrigger("attack");
         fireball2.SetActive(true);
@@ -45,16 +65,60 @@ public class BlueToothService : MonoBehaviour
         Debug.Log("AVA!");
     }
 
+    /// <summary>
+    /// Spell Protego
+    /// </summary>
     private void pro() {
-        anim.SetTrigger("attack");
         Debug.Log("PRO!");
+        anim.SetTrigger("attack");
+        shield.SetActive(true);
+        Invoke("closeShield", waitTime);
     }
+
+    private void closeShield()
+    {
+        Debug.Log("shield close");
+        shield.SetActive(false);
+    }
+
     void Awake()
     {
         //fireball = GameObject.Find("fireball-e");
         //fireball.transform.position = transform.position;
         //fireball.transform.position += new Vector3(2.5f, 2.5f, 0);
+        shield = transform.GetChild(1).gameObject;
+        shield.SetActive(false);
         anim = GetComponent<Animator>();
+        if (name == "Wizard")
+        {
+            fireball = GameObject.Find("fireball-e");
+            fireball2 = GameObject.Find("fireball-a");
+            fireball_other = GameObject.Find("fireball-e-2");
+        }
+        else
+        {
+            fireball = GameObject.Find("fireball-e-2");
+            fireball2 = GameObject.Find("fireball-a-2");
+            fireball_other = GameObject.Find("fireball-e");
+        }
+    }
+
+    /// <summary>
+    /// Demo usage of fireballs. Only for test.
+    /// Disable this after testing
+    /// </summary>
+    void test()
+    {
+        anim.SetTrigger("idle");
+        fireball.SetActive(true);
+        fireball.transform.position = transform.position;
+        fireball.transform.position += getInitPosition();
+        fireball2.SetActive(true);
+        fireball2.transform.position = transform.position;
+        fireball2.transform.position += getInitPosition();
+        //pro();
+        block();
+        //fireball.transform.rotation = Quaternion.Euler(0, 30, 30);
     }
 
     void ResetAnimation()
@@ -66,26 +130,14 @@ public class BlueToothService : MonoBehaviour
 
     void Start()
     {
-        if (name == "Wizard")
-        {
-            fireball = GameObject.Find("fireball-e");
-            fireball2 = GameObject.Find("fireball-a");
-        }
-        else
-        {
-            fireball = GameObject.Find("fireball-e-2");
-            fireball2 = GameObject.Find("fireball-a-2");
-        }
-
         try
         {
             Debug.Log("HI");
             anim.SetTrigger("die");
+            test(); // only for test
             BluetoothHelper.BLE = true;  //use Bluetooth Low Energy Technology
             bluetoothHelper = BluetoothHelper.GetInstance();
-            // bluetoothHelper.setFixedLengthBasedStream(1);
             bluetoothHelper.OnConnected += (helper) => {
-                // helper.StartListening();
                 anim.SetTrigger("idle");
                 List<BluetoothHelperService> services = helper.getGattServices();
                 foreach (BluetoothHelperService s in services)
@@ -98,16 +150,9 @@ public class BlueToothService : MonoBehaviour
                 }
 
                 Debug.Log("Connected");
-                //BluetoothHelperCharacteristic c = new BluetoothHelperCharacteristic("2A57");
-                //c.setService("180A");
                 BluetoothHelperCharacteristic c = new BluetoothHelperCharacteristic(characteristicName);
                 c.setService(serviceName);
                 bluetoothHelper.Subscribe(c);
-                // bluetoothHelper.setTxCharacteristic(c);
-                // bluetoothHelper.setRxCharacteristic(c);
-                // bluetoothHelper.setFixedLengthBasedStream(1);
-                // bluetoothHelper.StartListening();
-                //sendData();
             };
             bluetoothHelper.OnConnectionFailed += (helper)=>{
                 Debug.Log("Connection failed");
@@ -124,12 +169,7 @@ public class BlueToothService : MonoBehaviour
             };
             bluetoothHelper.OnCharacteristicChanged += (helper, value, characteristic) =>
             {
-                // Debug.Log(characteristic.getName());
                 byte a = value[0];
-                // for (int i = 0; i < value.Length; i++) {
-                //     a += value[i];
-                // }
-                // Debug.Log(a);
                 switch (a) {
                     case 7: 
                         pro();
@@ -142,24 +182,7 @@ public class BlueToothService : MonoBehaviour
                         break;
                     default: break;
                 }
-                // bluetoothHelper.WriteCharacteristic(characteristic, "0");
-                // anim.SetTrigger("attack");
             };
-
-            // BluetoothHelperService service = new BluetoothHelperService("FFE0");
-            // service.addCharacteristic(new BluetoothHelperCharacteristic("FFE1"));
-            // BluetoothHelperService service2 = new BluetoothHelperService("180A");
-            // service.addCharacteristic(new BluetoothHelperCharacteristic("2A24"));
-            // bluetoothHelper.Subscribe(service);
-            // bluetoothHelper.Subscribe(service2);
-            // bluetoothHelper.ScanNearbyDevices();
-
-            // BluetoothHelperService service = new BluetoothHelperService("19B10000-E8F2-537E-4F6C-D104768A1214");
-            // service.addCharacteristic(new BluetoothHelperCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214"));
-            // BluetoothHelperService service2 = new BluetoothHelperService("180A");
-            // service.addCharacteristic(new BluetoothHelperCharacteristic("2A24"));
-            // bluetoothHelper.Subscribe(service);
-            // bluetoothHelper.Subscribe(service2);
             bluetoothHelper.ScanNearbyDevices();
 
         }catch(Exception ex){
@@ -201,13 +224,6 @@ public class BlueToothService : MonoBehaviour
             return;
         if(!bluetoothHelper.isConnected())
             return;
-        //timer += Time.deltaTime;
-
-        //if(timer < 1)
-        //    return;
-        //timer = 0;
-        // sendData();
-        // read();
     }
 
     //void sendData(){
@@ -235,8 +251,11 @@ public class BlueToothService : MonoBehaviour
         {
             Debug.Log("is trigger!");
             Debug.Log(collision.name);
-            isDead = true;
-            anim.SetTrigger("die");
+            if (shield.activeSelf == false)
+            {
+                isDead = true;
+                anim.SetTrigger("die");
+            }
         }
     }
 }

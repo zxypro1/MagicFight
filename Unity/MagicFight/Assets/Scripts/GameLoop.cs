@@ -10,6 +10,8 @@ public class GameLoop : MonoBehaviour
     GameObject player2;
     GameObject fireball;
     GameObject fireball2;
+    GameObject fireball_a;
+    GameObject fireball2_a;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,9 +22,13 @@ public class GameLoop : MonoBehaviour
         player2 = GameObject.Find("Wizard2");
         fireball = GameObject.Find("fireball-e");
         fireball2 = GameObject.Find("fireball-a");
+        fireball_a = GameObject.Find("fireball-e-2");
+        fireball2_a = GameObject.Find("fireball-a-2");
 
         fireball.SetActive(false);
         fireball2.SetActive(false);
+        fireball_a.SetActive(false);
+        fireball2_a.SetActive(false);
     }
 
     // Update is called once per frame
