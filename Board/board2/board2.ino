@@ -109,7 +109,7 @@ bool recordAudioSample() {
                 delay(1);
 
             features[i] = mic.pop() * GAIN;
-            delay(SAMPLE_DELAY);
+//            delay(SAMPLE_DELAY);
         }
         return true;
     }
