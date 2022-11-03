@@ -78,12 +78,15 @@ int result = 0;
 #define NUMBER_OF_INPUTS   SAMPLES
 #define TENSOR_ARENA_SIZE  4 * 1024
 #define NUMBER_OF_OUTPUTS  NUMBER_OF_LABELS
+#define SERVICE_ID "765B"
+#define CHARACT_ID "5B23"
+#define DEVICE_NAME "Nano 33 BLE Sense2"
 Eloquent::TinyML::TensorFlow::TensorFlow<NUMBER_OF_INPUTS, NUMBER_OF_OUTPUTS, TENSOR_ARENA_SIZE> tf_model;
 
-BLEService ledService("765B"); // BLE LED Service
+BLEService ledService(SERVICE_ID); // BLE LED Service
 
 // BLE LED Switch Characteristic - custom 128-bit UUID, read and writable by central
-BLEByteCharacteristic switchCharacteristic("5B23", BLERead | BLEWrite | BLENotify | BLEBroadcast);
+BLEByteCharacteristic switchCharacteristic(CHARACT_ID, BLERead | BLEWrite | BLENotify | BLEBroadcast);
 
 
 float features[SAMPLES];
@@ -194,8 +197,8 @@ void setup() {
   // tflOutputTensor = tflInterpreter->output(0);
 
   // set advertised local name and service UUID:
-  BLE.setLocalName("Nano 33 BLE Sense2");
-  BLE.setDeviceName("Nano 33 BLE Sense2");
+  BLE.setLocalName(DEVICE_NAME);
+  BLE.setDeviceName(DEVICE_NAME);
   BLE.setAdvertisedService(ledService);
 
   // add the characteristic to the service
