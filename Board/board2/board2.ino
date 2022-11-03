@@ -116,6 +116,13 @@ bool recordAudioSample() {
     return false;
 }
 
+void broadcastResult(int _result) {
+  result = _result;
+  switchCharacteristic.writeValue(result);
+  switchCharacteristic.broadcast();
+  result = 0;
+}
+
 void recordAudio() {
   if (recordAudioSample()) {
     float prediction[NUMBER_OF_LABELS];
@@ -126,16 +133,14 @@ void recordAudio() {
       Serial.print(" = ");
       Serial.println(prediction[i]);
       if (prediction[i] > 0.5){
-        result = sends[i];
+        if (i == 0) {
+          broadcastResult(sends[i]);
+        } else {
+          result = sends[i];
+        }
       }
     }
   }
-}
-
-void broadcastResult(int result) {
-  switchCharacteristic.writeValue(result);
-  switchCharacteristic.broadcast();
-  result = 0;
 }
 
 
@@ -310,11 +315,10 @@ void loop() {
             
             Serial.print("Winner: ");
             Serial.print(GESTURES[maxIndex]);
-            if (maxIndex == 0 && result != 0) {
+            if (maxIndex == 0 && result != 0) { // fire
               broadcastResult(result);
-            } else if (maxIndex == 1) {
-              result = 10;
-              broadcastResult(result);
+            } else if (maxIndex == 1) { // blocking
+              broadcastResult(10);
             }
             
             Serial.println();
