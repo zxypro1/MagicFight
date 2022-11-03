@@ -110,9 +110,14 @@ void setup() {
 bool IsMoving() {
   // Look at the most recent accelerometer values.
   const float* input_data = model_input->data.f;
+  Serial.println(input_length);
   const float last_x = input_data[input_length - 3];
   const float last_y = input_data[input_length - 2];
   const float last_z = input_data[input_length - 1];
+
+  Serial.println(last_x);
+  Serial.println(last_y);
+  Serial.println(last_z);
 
   // Figure out the total amount of acceleration being felt by the device.
   const float last_x_squared = last_x * last_x;
@@ -120,12 +125,18 @@ bool IsMoving() {
   const float last_z_squared = last_z * last_z;
   const float acceleration_magnitude =
       sqrtf(last_x_squared + last_y_squared + last_z_squared);
+  
+  Serial.println(last_x_squared);
+  Serial.println(last_y_squared);
+  Serial.println(last_z_squared);
+
 
   // Acceleration is in milli-Gs, so normal gravity is 1,000 units.
   const float gravity = 1000.0f;
 
   // Subtract out gravity to get the actual movement magnitude.
   const float movement = acceleration_magnitude - gravity;
+  Serial.println(movement);
 
   // How much acceleration is needed before it's considered movement.
   const float movement_threshold = 40.0f;
