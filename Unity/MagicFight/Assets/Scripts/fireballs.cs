@@ -11,8 +11,6 @@ public class fireballs : MonoBehaviour
     void Start()
     {
         initPosition = transform.rotation;
-        //transform.Rotate(new Vector3(0, 0, 20.0f), Space.Self);
-        //transform.position += transform.forward;
     }
 
     public void onInit()
@@ -27,7 +25,7 @@ public class fireballs : MonoBehaviour
         transform.Translate(Vector3.up * Time.deltaTime * speed, Space.Self);
         if (isblocked)
         {
-            transform.rotation *= Quaternion.AngleAxis(0.1f, Vector3.forward);
+            transform.rotation *= Quaternion.AngleAxis(0.1f, Vector3.forward); // 绕z轴旋转
         }
     }
 

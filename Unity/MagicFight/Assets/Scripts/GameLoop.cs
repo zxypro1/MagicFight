@@ -34,17 +34,17 @@ public class GameLoop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player1.GetComponent<BlueToothService>().isDead)
-        {
-            Time.timeScale = 0;
-            endUI.SetActive(true);
-            endUI.transform.Find("Text").GetComponent<Text>().text = "Player2 Win!";
-        }
-        if (player2.GetComponent<BlueToothService>().isDead)
-        {
-            Time.timeScale = 0;
-            endUI.SetActive(true);
-            endUI.transform.Find("Text").GetComponent<Text>().text = "Player1 Win!";
-        }
+        //if (player1.GetComponent<BlueToothService>().isDead)
+        //{
+        //    Time.timeScale = 0;
+        //    endUI.SetActive(true);
+        //    endUI.transform.Find("Text").GetComponent<Text>().text = "Player2 Win!";
+        //}
+        //if (player2.GetComponent<BlueToothService>().isDead)
+        //{
+        //    Time.timeScale = 0;
+        //    endUI.SetActive(true);
+        //    endUI.transform.Find("Text").GetComponent<Text>().text = "Player1 Win!";
+        //}
     }
 }

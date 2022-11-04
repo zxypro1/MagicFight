@@ -2,144 +2,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using ArduinoBluetoothAPI;
 using System;
+using UnityEngine.UIElements;
 
 public class BlueToothService : MonoBehaviour
 {
     private BluetoothHelper bluetoothHelper;
-    private Animator anim;
-    private GameObject player;
-    private GameObject fireball;
-    private GameObject fireball2;
-    private GameObject fireball_other;
-    private GameObject shield;
-    public bool isDead = false;
-    public string deviceName;
-    public string characteristicName;
-    public string serviceName;
-    public int waitTime = 1; // shield show time (second)
-
-    /// <summary>
-    /// Set init position of fireballs.
-    /// </summary>
-    /// <returns>Vector3</returns>
-    private Vector3 getInitPosition()
-    {
-        if (name == "Wizard")
-        {
-            return new Vector3(2.5f, 2.5f, 0);
-        }
-        else
-        {
-            return new Vector3(-2.5f, 2.5f, 0);
-        }
-    }
-
-    private void block()
-    {
-        if (fireball_other.activeSelf)
-        {
-            fireball_other.GetComponent<fireballs>().isblocked = true;
-        }
-    }
-
-    /// <summary>
-    /// Spell Expelliamas
-    /// </summary>
-    private void exps() {
-        anim.SetTrigger("attack");
-        fireball.GetComponent<fireballs>().onInit();
-        fireball.SetActive(true);
-        fireball.transform.position = transform.position;
-        fireball.transform.position += getInitPosition();
-        Debug.Log("EXPS!");
-    }
-
-    /// <summary>
-    /// Spell Avada Kedavra
-    /// </summary>
-    private void avad() {
-        anim.SetTrigger("attack");
-        fireball2.SetActive(true);
-        fireball2.transform.position = transform.position;
-        fireball2.transform.position += getInitPosition();
-        Debug.Log("AVA!");
-    }
-
-    /// <summary>
-    /// Spell Protego
-    /// </summary>
-    private void pro() {
-        Debug.Log("PRO!");
-        anim.SetTrigger("attack");
-        shield.SetActive(true);
-        Invoke("closeShield", waitTime);
-    }
-
-    private void closeShield()
-    {
-        Debug.Log("shield close");
-        shield.SetActive(false);
-    }
+    private BluetoothHelper bluetoothHelper2;
+    private GameObject player1;
+    //private GameObject player2;
+    private string deviceName = "Nano 33 BLE Sense";
+    private string characteristicName = "65C1";
+    private string serviceName = "708A";
+    //private string deviceName2 = "Nano 33 BLE Sense2";
+    //private string characteristicName2 = "5B23";
+    //private string serviceName2 = "765B";
 
     void Awake()
     {
-        //fireball = GameObject.Find("fireball-e");
-        //fireball.transform.position = transform.position;
-        //fireball.transform.position += new Vector3(2.5f, 2.5f, 0);
-        shield = transform.GetChild(1).gameObject;
-        shield.SetActive(false);
-        anim = GetComponent<Animator>();
-        if (name == "Wizard")
-        {
-            fireball = GameObject.Find("fireball-e");
-            fireball2 = GameObject.Find("fireball-a");
-            fireball_other = GameObject.Find("fireball-e-2");
-        }
-        else
-        {
-            fireball = GameObject.Find("fireball-e-2");
-            fireball2 = GameObject.Find("fireball-a-2");
-            fireball_other = GameObject.Find("fireball-e");
-        }
+        player1 = GameObject.Find("Wizard");
+        //player2 = GameObject.Find("Wizard2");
     }
-
-    /// <summary>
-    /// Demo usage of fireballs. Only for test.
-    /// Disable this after testing
-    /// </summary>
-    void test()
-    {
-        anim.SetTrigger("idle");
-        fireball.SetActive(true);
-        fireball.transform.position = transform.position;
-        fireball.transform.position += getInitPosition();
-        fireball2.SetActive(true);
-        fireball2.transform.position = transform.position;
-        fireball2.transform.position += getInitPosition();
-        //pro();
-        block();
-        //fireball.transform.rotation = Quaternion.Euler(0, 30, 30);
-    }
-
-    void ResetAnimation()
-        {
-            anim.SetBool("isLookUp", false);
-            anim.SetBool("isRun", false);
-            anim.SetBool("isJump", false);
-        }
 
     void Start()
     {
+        player1 = GameObject.Find("Wizard");
+        //player2 = GameObject.Find("Wizard2");
+
+        player1.GetComponent<Player1>().die();
+        //player2.GetComponent<Player2>().die();
         try
         {
             Debug.Log("HI");
-            anim.SetTrigger("die");
-            test(); // only for test
             BluetoothHelper.BLE = true;  //use Bluetooth Low Energy Technology
-            bluetoothHelper = BluetoothHelper.GetInstance();
+            bluetoothHelper = BluetoothHelper.GetNewInstance(deviceName);
+            //bluetoothHelper2 = BluetoothHelper.GetNewInstance(deviceName2);
+
+            // player1 connect
             bluetoothHelper.OnConnected += (helper) => {
-                anim.SetTrigger("idle");
                 List<BluetoothHelperService> services = helper.getGattServices();
+                player1.GetComponent<Player1>().idle();
                 foreach (BluetoothHelperService s in services)
                 {
                     Debug.Log("Service : " + s.getName());
@@ -154,9 +55,9 @@ public class BlueToothService : MonoBehaviour
                 c.setService(serviceName);
                 bluetoothHelper.Subscribe(c);
             };
-            bluetoothHelper.OnConnectionFailed += (helper)=>{
+            bluetoothHelper.OnConnectionFailed += (helper) => {
                 Debug.Log("Connection failed");
-                anim.SetTrigger("die");
+                player1.GetComponent<Player1>().die();
             };
             bluetoothHelper.OnScanEnded += OnScanEnded;
             bluetoothHelper.OnServiceNotFound += (helper, serviceName) =>
@@ -170,45 +71,124 @@ public class BlueToothService : MonoBehaviour
             bluetoothHelper.OnCharacteristicChanged += (helper, value, characteristic) =>
             {
                 byte a = value[0];
-                switch (a) {
-                    case 7: 
-                        pro();
+                Debug.Log(a);
+                switch (a)
+                {
+                    case 7:
+                        player1.GetComponent<Player1>().pro();
                         break;
-                    case 8: 
-                        avad();
+                    case 8:
+                        player1.GetComponent<Player1>().avad();
                         break;
-                    case 9: 
-                        exps();
+                    case 9:
+                        player1.GetComponent<Player1>().exps();
+                        break;
+                    case 10:
+                        player1.GetComponent<Player1>().block();
                         break;
                     default: break;
                 }
             };
-            bluetoothHelper.ScanNearbyDevices();
 
-        }catch(Exception ex){
+            // player2 connect
+            //bluetoothHelper2.OnConnected += (helper) => {
+            //    List<BluetoothHelperService> services2 = helper.getGattServices();
+            //    player2.GetComponent<Player2>().idle();
+            //    foreach (BluetoothHelperService s in services2)
+            //    {
+            //        Debug.Log("Service : " + s.getName());
+            //        foreach (BluetoothHelperCharacteristic item in s.getCharacteristics())
+            //        {
+            //            Debug.Log(item.getName());
+            //        }
+            //    }
+
+            //    Debug.Log("Connected");
+            //    BluetoothHelperCharacteristic d = new BluetoothHelperCharacteristic(characteristicName2);
+            //    d.setService(serviceName2);
+            //    bluetoothHelper.Subscribe(d);
+            //};
+            //bluetoothHelper2.OnConnectionFailed += (helper) => {
+            //    Debug.Log("Connection failed");
+            //    player2.GetComponent<Player2>().die();
+            //};
+            //bluetoothHelper2.OnScanEnded += OnScanEnded2;
+            //bluetoothHelper2.OnServiceNotFound += (helper, serviceName) =>
+            //{
+            //    Debug.Log(serviceName);
+            //};
+            //bluetoothHelper2.OnCharacteristicNotFound += (helper, serviceName, characteristicName) =>
+            //{
+            //    Debug.Log(characteristicName);
+            //};
+            //bluetoothHelper2.OnCharacteristicChanged += (helper, value, characteristic) =>
+            //{
+            //    byte a = value[0];
+            //    Debug.Log(a);
+            //    switch (a)
+            //    {
+            //        case 7:
+            //            player2.GetComponent<Player2>().pro();
+            //            break;
+            //        case 8:
+            //            player2.GetComponent<Player2>().avad();
+            //            break;
+            //        case 9:
+            //            player2.GetComponent<Player2>().exps();
+            //            break;
+            //        case 10:
+            //            player2.GetComponent<Player2>().block();
+            //            break;
+            //        default: break;
+            //    }
+            //};
+            bluetoothHelper.ScanNearbyDevices();
+            //bluetoothHelper2.ScanNearbyDevices();
+
+        }
+        catch (Exception ex)
+        {
             Debug.Log(ex.StackTrace);
         }
     }
 
-    private void OnScanEnded(BluetoothHelper helper, LinkedList<BluetoothDevice> devices){
+    private void OnScanEnded(BluetoothHelper helper, LinkedList<BluetoothDevice> devices)
+    {
         Debug.Log("Found " + devices.Count);
-        if(devices.Count == 0){
-            bluetoothHelper.ScanNearbyDevices();
-            return;
-        }
-
-        foreach(var d in devices)
+        foreach (var d in devices)
         {
             Debug.Log(d.DeviceName);
         }
         try
         {
-            bluetoothHelper.setDeviceName(deviceName);
+            //bluetoothHelper.setDeviceName(deviceName);
             bluetoothHelper.Connect();
             Debug.Log("Connecting");
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
-            bluetoothHelper.ScanNearbyDevices();
+            //bluetoothHelper.ScanNearbyDevices();
+            Debug.Log(ex.Message);
+        }
+    }
+
+    private void OnScanEnded2(BluetoothHelper helper, LinkedList<BluetoothDevice> devices)
+    {
+        Debug.Log("Found " + devices.Count);
+
+        foreach (var d in devices)
+        {
+            Debug.Log(d.DeviceName);
+        }
+        try
+        {
+            //bluetoothHelper2.setDeviceName(deviceName2);
+            bluetoothHelper2.Connect();
+            Debug.Log("Connecting");
+        }
+        catch (Exception ex)
+        {
+            //bluetoothHelper2.ScanNearbyDevices();
             Debug.Log(ex.Message);
         }
     }
@@ -217,13 +197,20 @@ public class BlueToothService : MonoBehaviour
     {
         if (bluetoothHelper != null)
             bluetoothHelper.Disconnect();
+        //if (bluetoothHelper2 != null)
+        //    bluetoothHelper2.Disconnect();
     }
 
-    void Update(){
-        if(bluetoothHelper == null)
+    void Update()
+    {
+        if (bluetoothHelper == null)
             return;
-        if(!bluetoothHelper.isConnected())
-            return;
+        if (!bluetoothHelper.isConnected())
+            bluetoothHelper.ScanNearbyDevices();
+        //if (bluetoothHelper2 == null)
+        //    return;
+        //if (!bluetoothHelper2.isConnected())
+        //    bluetoothHelper2.ScanNearbyDevices();
     }
 
     //void sendData(){
@@ -243,19 +230,4 @@ public class BlueToothService : MonoBehaviour
     //    ch.setService("180A");//this line is mandatory!!!
     //    bluetoothHelper.ReadCharacteristic(ch);
     //}
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-
-        if (collision.name == "fireball-e" || collision.name == "fireball-a")
-        {
-            Debug.Log("is trigger!");
-            Debug.Log(collision.name);
-            if (shield.activeSelf == false)
-            {
-                isDead = true;
-                anim.SetTrigger("die");
-            }
-        }
-    }
 }
