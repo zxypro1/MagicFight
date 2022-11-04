@@ -1,5 +1,5 @@
 #include "Mic.h"
-#include "Classifier.h"
+//#include "Classifier.h"
 #include <math.h>
 #include <EloquentTinyML.h>      // https://github.com/eloquentarduino/EloquentTinyML
 #include "tf_lite_model.h"       // TF Lite model file
