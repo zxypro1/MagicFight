@@ -18,7 +18,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-#include "tensorflow/lite/version.h"
+//#include "tensorflow/lite/version.h"
 
 #include "magic_wand_model_data.h"
 #include "rasterize_stroke.h"
@@ -90,8 +90,8 @@ tflite::ErrorReporter* error_reporter = nullptr;
 const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 
-constexpr int label_count = 10;
-const char* labels[label_count] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+constexpr int label_count = 6;
+const char* labels[label_count] = {"0", "1", "2", "3", "4", "5"};
 
 void SetupIMU() {
 
@@ -672,7 +672,7 @@ void loop() {
 
     int8_t max_score;
     int max_index;
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < label_count; ++i) {
       const int8_t score = output->data.int8[i];
       if ((i == 0) || (score > max_score)) {
         max_score = score;
