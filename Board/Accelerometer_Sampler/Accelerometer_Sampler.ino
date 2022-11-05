@@ -45,7 +45,7 @@ void setup() {
 void loop() {
   float x, y, z;
 
-  Serial.print("_,_,_\n");
+  Serial.print("-,-,-\n");
 
   for (int i = 0; i < SAMPLE_NUM; i++) {
     if (IMU.accelerationAvailable()) {
