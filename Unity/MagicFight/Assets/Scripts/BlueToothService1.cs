@@ -30,6 +30,7 @@ public class BlueToothService1 : MonoBehaviour
 
         //player1.GetComponent<Player1>().die();
         player2.GetComponent<Player2>().die();
+        //player2.GetComponent<Player2>().test();
         try
         {
             Debug.Log("HI");

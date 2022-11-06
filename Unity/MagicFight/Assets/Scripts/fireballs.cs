@@ -8,7 +8,7 @@ public class fireballs : MonoBehaviour
     public bool isblocked = false;
     // Start is called before the first frame update
     private Quaternion initPosition;
-    void Start()
+    void Awake()
     {
         initPosition = transform.rotation;
     }
@@ -25,7 +25,8 @@ public class fireballs : MonoBehaviour
         transform.Translate(Vector3.up * Time.deltaTime * speed, Space.Self);
         if (isblocked)
         {
-            transform.rotation *= Quaternion.AngleAxis(0.1f, Vector3.forward); // 绕z轴旋转
+            transform.rotation *= Quaternion.AngleAxis(30f, Vector3.forward); // 绕z轴旋转
+            isblocked = false;
         }
     }
 

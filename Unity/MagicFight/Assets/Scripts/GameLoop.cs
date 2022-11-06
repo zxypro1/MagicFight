@@ -31,20 +31,29 @@ public class GameLoop : MonoBehaviour
         fireball2_a.SetActive(false);
     }
 
+    private void closeUI()
+    {
+        endUI.SetActive(false);
+        player2.GetComponent<Player2>().idle();
+        player1.GetComponent<Player1>().idle();
+    }
+
     // Update is called once per frame
     void Update()
     {
-        //if (player1.GetComponent<BlueToothService>().isDead)
-        //{
-        //    Time.timeScale = 0;
-        //    endUI.SetActive(true);
-        //    endUI.transform.Find("Text").GetComponent<Text>().text = "Player2 Win!";
-        //}
-        //if (player2.GetComponent<BlueToothService>().isDead)
-        //{
-        //    Time.timeScale = 0;
-        //    endUI.SetActive(true);
-        //    endUI.transform.Find("Text").GetComponent<Text>().text = "Player1 Win!";
-        //}
+        if (player1.GetComponent<Player1>().isDead)
+        {
+            //Time.timeScale = 0;
+            endUI.SetActive(true);
+            endUI.transform.Find("Text").GetComponent<Text>().text = "Player2 Win!";
+            Invoke("closeUI", 5);
+        }
+        if (player2.GetComponent<Player2>().isDead)
+        {
+            //Time.timeScale = 0;
+            endUI.SetActive(true);
+            endUI.transform.Find("Text").GetComponent<Text>().text = "Player1 Win!";
+            Invoke("closeUI", 5);
+        }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
+using CodeMonkey.HealthSystemCM;
 
 public class Player1 : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Player1 : MonoBehaviour
     private GameObject fireball_other; // player1 oppsite
     private Animator anim;
     public int waitTime = 1; // shield show time (second)
+    [SerializeField] private GameObject getHealthSystemGameObject;
+    HealthSystem healthSystem;
 
     void ResetAnimation()
     {
@@ -28,6 +31,7 @@ public class Player1 : MonoBehaviour
     public void idle()
     {
         anim.SetTrigger("idle");
+        isDead = false;
     }
 
     public void block()
@@ -62,7 +66,7 @@ public class Player1 : MonoBehaviour
     /// <returns>Vector3</returns>
     private Vector3 getInitPosition()
     {
-        return new Vector3(2.5f, 2.5f, 0);
+        return new Vector3(2.5f, 2f, 0);
     }
 
     /// <summary>
@@ -76,6 +80,7 @@ public class Player1 : MonoBehaviour
         fireball.transform.position = transform.position;
         fireball.transform.position += getInitPosition();
         Debug.Log("EXPS!");
+        healthSystem.Heal(20);
     }
 
     /// <summary>
@@ -83,11 +88,15 @@ public class Player1 : MonoBehaviour
     /// </summary>
     public void avad()
     {
-        anim.SetTrigger("attack");
-        fireball2.SetActive(true);
-        fireball2.transform.position = transform.position;
-        fireball2.transform.position += getInitPosition();
         Debug.Log("AVA!");
+        if (healthSystem.GetHealth() == 100f)
+        {
+            anim.SetTrigger("attack");
+            fireball2.SetActive(true);
+            fireball2.transform.position = transform.position;
+            fireball2.transform.position += getInitPosition();
+            healthSystem.Damage(100);
+        }
     }
 
     /// <summary>
@@ -96,9 +105,13 @@ public class Player1 : MonoBehaviour
     public void pro()
     {
         Debug.Log("PRO!");
-        anim.SetTrigger("attack");
-        shield.SetActive(true);
-        Invoke("closeShield", waitTime);
+        if (healthSystem.GetHealth() >= 20f && shield.activeSelf == false)
+        {
+            anim.SetTrigger("attack");
+            shield.SetActive(true);
+            healthSystem.Damage(20);
+        }
+        //Invoke("closeShield", waitTime);
     }
 
     private void closeShield()
@@ -110,6 +123,10 @@ public class Player1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        getHealthSystemGameObject = gameObject;
+        HealthSystem.TryGetHealthSystem(getHealthSystemGameObject, out healthSystem, true);
+
+
         shield = transform.GetChild(1).gameObject;
         shield.SetActive(false);
         anim = GetComponent<Animator>();
@@ -126,7 +143,7 @@ public class Player1 : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if (collision.name == "fireball-e" || collision.name == "fireball-a")
+        if (collision.name == "fireball-e-2")
         {
             Debug.Log("is trigger!");
             Debug.Log(collision.name);
@@ -134,7 +151,14 @@ public class Player1 : MonoBehaviour
             {
                 isDead = true;
                 anim.SetTrigger("die");
+            } else
+            {
+                shield.SetActive(false);
             }
+        } else if (collision.name == "fireball-a-2")
+        {
+            isDead = true;
+            anim.SetTrigger("die");
         }
     }
 }
