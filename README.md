@@ -1,6 +1,4 @@
-# MagicFight!
-
-<img src="https://github.com/zxypro1/MagicFight/blob/57d80a56a4cd70d88ee913dbb41bb81e6b5797bd/imgs/magicfight_logo.png" align="right" alt="logo" width="110" height="100">
+# MagicFight! <img src="https://github.com/zxypro1/MagicFight/blob/57d80a56a4cd70d88ee913dbb41bb81e6b5797bd/imgs/magicfight_logo.png" align="right" alt="logo" width="110" height="100">
 
 MagicFight! A tiny-ML game project based on [Arduino Nano 33 BLE Sense](https://store-usa.arduino.cc/products/arduino-nano-33-ble-sense), [Tensorflow Lite](https://www.tensorflow.org/lite) and Unity.
 
