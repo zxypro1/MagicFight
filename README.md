@@ -28,3 +28,4 @@ The exe executable file of the Unity game is still on development. However, if y
 2. Install **EloquentML** library, **LSM9DS1** library, **ArduinoBLE** library and **Arduino_CMSIS-DSP** library in Arduino IDE’s library manager.
 3. Open `board1.ino` and `board2.ino` files (in `/Board/board1` and `/Board/board2` folder) in Arduino IDE. 
 4. Compile and upload to your boards.
+> For now, the model is only trained by two person, so it may not work properly with your voice. We are currently gathering more voice data so please wait for update!
