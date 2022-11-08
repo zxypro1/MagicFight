@@ -3,7 +3,7 @@
 MagicFight! A tiny-ML game project based on [Arduino Nano 33 BLE Sense](https://store-usa.arduino.cc/products/arduino-nano-33-ble-sense), [Tensorflow Lite](https://www.tensorflow.org/lite) and Unity.
 
 ## Introduction
-MagicFight! is a virtual game project in which player can speak spells to fight others, like a wizard in Harry Potter. In this project, we use Arduino Nano 33 BLE Sense as the ‘magic wand’ to receive and recongize sound signals and geature signals, using its microphone, acceleration sensor and gyroscope.  
+MagicFight! is a game project in which player can speak spells to fight others, like a wizard in Harry Potter. In this project, we use Arduino Nano 33 BLE Sense as the ‘magic wand’ to receive and recongize sound signals and geature signals, using its microphone, acceleration sensor and gyroscope.  
 [A presentation video](https://www.youtube.com/watch?v=05lCZf7qrKU) has been upload to YouTube.  
 ![Playing gif](https://github.com/zxypro1/MagicFight/blob/8916cc56866ad91707f7d7bce8f744fad2424c48/imgs/Playing.gif)
 
