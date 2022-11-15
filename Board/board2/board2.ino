@@ -107,14 +107,23 @@ void onAudio() {
  */
 bool recordAudioSample() {
     if (mic.hasData() && mic.data() > SOUND_THRESHOLD) {
-        for (int i = 0; i < SAMPLES; i++) {
-            while (!mic.hasData())
-                delay(1);
-
-            features[i] = mic.pop() * GAIN;
-//            delay(SAMPLE_DELAY);
+      int count = 0;
+      for (int i = 0; i < SAMPLES; i++) {
+        while (!mic.hasData()){
+          count ++;
+          delay(1);
+          if (count == 100)
+          break;  
         }
-        return true;
+        if (count == 100)
+          break;  
+        else {
+          count = 0;
+          features[i] = mic.pop() * GAIN;
+        }
+//            delay(SAMPLE_DELAY);
+      }
+      return true;
     }
     return false;
 }
